@@ -1,0 +1,495 @@
+# S2 run. 0x44 at start: height 976830 hash 00000000000000000001247e03d1ce6e03f87144e7701c401eba0d7177bbfb4c
+# Esplora (https://blockstream.info/api) tip at start: 976832
+
+# A. The unspent fixture
+
+## A1 fixture vout 0, max 100 - brief: 1000 sats, 0x001466991504b673fa2d7d9ad8b4a4f76e4d3b8ec831
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea400000064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000000003e80016001466991504b673fa2d7d9ad8b4a4f76e4d3b8ec83101
+esplora: value 1000 type v0_p2wpkh script length 22 spent False
+0x48: sats 1000 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 001466991504b673fa2d7d9ad8b4a4f76e4d3b8ec831
+-> MATCH (value, full length, script bytes)
+
+## A2 fixture vout 0, max 22 (exact)
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea400000016 --rpc-url https://rpc.hemi.network/rpc
+0x00000000000003e80016001466991504b673fa2d7d9ad8b4a4f76e4d3b8ec83101
+esplora: value 1000 type v0_p2wpkh script length 22 spent False
+0x48: sats 1000 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 001466991504b673fa2d7d9ad8b4a4f76e4d3b8ec831
+-> MATCH (value, full length, script bytes)
+
+## A3 fixture vout 0, max 10 (truncation)
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea40000000a --rpc-url https://rpc.hemi.network/rpc
+0x00000000000003e80016001466991504b673fa2d01
+esplora: value 1000 type v0_p2wpkh script length 22 spent False
+0x48: sats 1000 fullScriptLength 22 returned 10 bytes flag 0x01
+      script 001466991504b673fa2d
+-> MATCH (value, full length, script bytes cut to 10)
+
+## A4 fixture vout 0, max 0
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea400000000 --rpc-url https://rpc.hemi.network/rpc
+0x00000000000003e8001601
+esplora: value 1000 type v0_p2wpkh script length 22 spent False
+0x48: sats 1000 fullScriptLength 22 returned 0 bytes flag 0x01
+      script 
+-> MATCH (value, full length, script bytes cut to 0)
+
+## A5 fixture vout 1 (change), max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea400010064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000000035b00160014208fa508568396937efe008cbae70b4fe8a1ae4501
+esplora: value 859 type v0_p2wpkh script length 22 spent False
+0x48: sats 859 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014208fa508568396937efe008cbae70b4fe8a1ae45
+-> MATCH (value, full length, script bytes)
+
+## A6 fixture vout 2 (does not exist)
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea400020064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: tx has 2 outputs; vout 2 does not exist
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+# B. Output index >= 32 and scripts > 64 bytes: the whitepaper tx (948 outputs, 201-byte bare multisig)
+
+## B whitepaper vout 0, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e7130000012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c95141e4cf0200067daf13255044462d312e340a25c3a4c3bcc3b6c39f0a322030206f626a0a3c3c2f4c656e6774682033203020522f46696c7465722f466c617465446541636f64653e3e0a73747265616d0a789cad5c4b8b24b911becfafa8b3a1da292925654253d0d55373f06d61c007e39bbd061f0cde8bffbe25c55b5266f61ab3905d419ba54728e28bb76a963777fbcfb77fdf96db7d291f93f3e599f7fafcedefb73fffe1f6aff665fdefb77f7c7bfefce6c2fa166e695bdfd6dbcfbfddfef8c3dd5cf953ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 5141e4cf0200067daf13255044462d312e340a25c3a4c3bcc3b6c39f0a322030206f626a0a3c3c2f...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 31, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713001f012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c9514163d06bb1c59a20cd957591ce941fb7a4f0b148b709af152fef2bd1a871d43e8dc9a59e594f07783e5b2ba391285acafe58ccccae3bacad4ce375f762c6f9883bc941a23c7acfab99972463dd2ab3713ed97bb6e8fcaac53545bc526479526a65f755869df0ca76b72efc8646c594a0fad86674e870568a72e6707cceab02ca9bd17eec41f5ff98bbfbde9074af576b954645df5aa61a476fd0455812434fcd7a01911e5d671af79a914831c204f427d98a2d27d3ba8ff9e28114a67438c84c3002df33330d53ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 514163d06bb1c59a20cd957591ce941fb7a4f0b148b709af152fef2bd1a871d43e8dc9a59e594f07...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 32, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e7130020012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c951412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3143b3b4c01565a76aa99293e6d374ad2e448f579c10035ebb6b65341aa16925451989b1a7cd501d52bc42e907500e74d3c0ce0fdb523bc11a02ec0c52e3d75339c5449af2a93cdb89f3c95386e75f8b0c8e8746af295815a920c0300d241eefd5506d8c4aecc4fb087946c54ffd591901b7af0b9e899718920d434b3aa6adf9182ae75e954ff625884dd9e79db59382a9cce49d420918624e5c5a28e5cdf2353ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 51412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 33, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e7130021012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c9514119e57b55b64983b92fad0660cfb679911c3a5d71102fd4ddef94fa75b0ae8176716632aa49dded8273178756f7c93c31486a6bb847eea3d8757edad390b7ba7c3d413115dccf8ac26b253b55cce0daad09ad98edca82f8e7ac3f7a158cb189ccf41988d4217b2f8d41dae11074d579d838ece0593811333416c83812204819dc5e225541c99a9d88782c4f37f78cf0ba9ddea8790ef9724ed32ac79c4545cbaa65b968ee9beb439e563c987fce3a19e3a593fe56df9ca96ecc02c8efc714cfe3d256d5c1be53ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 514119e57b55b64983b92fad0660cfb679911c3a5d71102fd4ddef94fa75b0ae8176716632aa49dd...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 255, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71300ff012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c951417957303385bd0d65a30274562c16443a308e47814897ed0c58e7361fa2f1191ad35f7405f091c0e9c070800e0494be0e63a443696495da3dcebd4ecaf93ca64188412e16c7998f2a72f6a3fddad87ec5e7649b0bd9f1c2c81bacceefa6e247b2ad5a56fbb742d94295deec9d1d1c4c8b3d2972061cd7965e037927646e01a3c90baa0341513ed68dc3aa9c6e54c00094cf45ba51ae062e7136d08dc363b6909230663084a91006e3f995a7d8209503e993e4a3f1910071da780599170a926d4bdfb43dd09453ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 51417957303385bd0d65a30274562c16443a308e47814897ed0c58e7361fa2f1191ad35f7405f091...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 256, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e7130100012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c95141354608e267a7dc52bde7542a75fc836d773cbdeff3bb9eab9f3ae132a73e2f7c6dc565af545f2946e7cc6d5e4efdba72fa1b47df4f7db9f7309e86379f7cedced5413397d59647c30e83c37bcb0f52ef3e74cfc1a699df7be1995b60300fc02a4c64772037ea7d92b5bb495453bdc78ef700e91fb4d37612d1d4d00c62b45a1bab44c841d58f0b459d7b85a1c5d065a0f718f64a9b0041d7449558a9ac60ba188a21bac653ebc6e4dd18790fb6cf3de03ee9e6e49765adee3e37eb3e4c2d4499e9d7af44bf53ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 5141354608e267a7dc52bde7542a75fc836d773cbdeff3bb9eab9f3ae132a73e2f7c6dc565af545f...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 500, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71301f4012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c9514170c40b2f447f554326afc11732e4cb23dd9aa2fcb3f22fcc5f967f7bfe41f943f7976ebd1c0276a6b2c00e805709eb255e8938031e1cc809a267005151c298808d413ed59053cf7146148bda7bf1ffa80657bdd153cfebc81b2b57a17ca67d17b45c188df4e2bf3cc5cb4551ce68f96a2f5e7712cec021206f480eb4f423c29df410294188711ad61d7c298872a9dbedd3187c1a8f8add0648bcda1c15cb7a978a68989d306835642d9d999716323ed1a0b0481ff3c9bef893f527f0da33afa9bfe7ed633b53ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 514170c40b2f447f554326afc11732e4cb23dd9aa2fcb3f22fcc5f967f7bfe41f943f7976ebd1c02...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 944, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71303b0012c --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c9514130206e200a30303030313832353430203030303030206e200a747261696c65720a3c3c2f53697a652036382f526f6f74203636203020520a2f496e666f20363720413020520a2f4944205b203c43413142304134344244353432343533424546393138464643443436444330343e0a3c4341314230413434424435343234353342454641393138464643443436444330343e205d0a2f446f63436865636b73756d202f36463732454137353134444641443233464142434337413535303032314146370a3e53ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 514130206e200a30303030313832353430203030303030206e200a747261696c65720a3c3c2f5369...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 945, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71303b1012c --rpc-url https://rpc.hemi.network/rpc
+0x0000000000000001002551213e0a7374617274787265660a3138323732370a2525454f460a000000000000000051ae01
+esplora: value 1 type unknown script length 37 spent False
+0x48: sats 1 fullScriptLength 37 returned 37 bytes flag 0x01
+      script 51213e0a7374617274787265660a3138323732370a2525454f460a000000000000000051ae
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 946, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71303b2012c --rpc-url https://rpc.hemi.network/rpc
+0x0000000000000001001976a91462e907b15cbf27d5425399ebf6f0fb50ebb88f1888ac01
+esplora: value 1 type p2pkh script length 25 spent False
+0x48: sats 1 fullScriptLength 25 returned 25 bytes flag 0x01
+      script 76a91462e907b15cbf27d5425399ebf6f0fb50ebb88f1888ac
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 947, max 300
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71303b3012c --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 18687321 type p2pkh script length 25 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## B whitepaper vout 32, max 64 (truncation of a 201-byte script)
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71300200040 --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c951412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3143b3b4c01565a76aa99293e6d374ad2e448f579c10035eb01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 64 bytes flag 0x01
+      script 51412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3...
+-> MATCH (value, full length, script bytes cut to 64)
+
+## B whitepaper vout 32, max 200 (one byte short)
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713002000c8 --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c951412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3143b3b4c01565a76aa99293e6d374ad2e448f579c10035ebb6b65341aa16925451989b1a7cd501d52bc42e907500e74d3c0ce0fdb523bc11a02ec0c52e3d75339c5449af2a93cdb89f3c95386e75f8b0c8e8746af295815a920c0300d241eefd5506d8c4aecc4fb087946c54ffd591901b7af0b9e899718920d434b3aa6adf9182ae75e954ff625884dd9e79db59382a9cce49d420918624e5c5a28e5cdf235301
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 200 bytes flag 0x01
+      script 51412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3...
+-> MATCH (value, full length, script bytes cut to 200)
+
+## B whitepaper vout 32, max 201 (exact)
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e713002000c9 --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c951412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3143b3b4c01565a76aa99293e6d374ad2e448f579c10035ebb6b65341aa16925451989b1a7cd501d52bc42e907500e74d3c0ce0fdb523bc11a02ec0c52e3d75339c5449af2a93cdb89f3c95386e75f8b0c8e8746af295815a920c0300d241eefd5506d8c4aecc4fb087946c54ffd591901b7af0b9e899718920d434b3aa6adf9182ae75e954ff625884dd9e79db59382a9cce49d420918624e5c5a28e5cdf2353ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 51412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 32, max 65535
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e7130020ffff --rpc-url https://rpc.hemi.network/rpc
+0x000000000000000100c951412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3143b3b4c01565a76aa99293e6d374ad2e448f579c10035ebb6b65341aa16925451989b1a7cd501d52bc42e907500e74d3c0ce0fdb523bc11a02ec0c52e3d75339c5449af2a93cdb89f3c95386e75f8b0c8e8746af295815a920c0300d241eefd5506d8c4aecc4fb087946c54ffd591901b7af0b9e899718920d434b3aa6adf9182ae75e954ff625884dd9e79db59382a9cce49d420918624e5c5a28e5cdf2353ae01
+esplora: value 1 type unknown script length 201 spent False
+0x48: sats 1 fullScriptLength 201 returned 201 bytes flag 0x01
+      script 51412dc7869d09442322ea354c71f7145027a184dc13f914441aa8f093845ebb2acf35a02e185de3...
+-> MATCH (value, full length, script bytes)
+
+## B whitepaper vout 948 (does not exist)
+$ cast call 0x0000000000000000000000000000000000000048 0x54e48e5f5c656b26c3bca14a8c95aa583d07ebe84dde3b7dd4a78f4e4186e71303b4012c --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: tx has 948 outputs; vout 948 does not exist
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+# C. Index >= 32 in recent batch transactions (all five address types, OP_RETURN)
+
+## C 6ac09b11 vout 30, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b001e0064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000001b60f2001600141ede5ec01035d5ff064697febdd22b368e56855d01
+esplora: value 1794290 type v0_p2wpkh script length 22 spent False
+0x48: sats 1794290 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 00141ede5ec01035d5ff064697febdd22b368e56855d
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 31, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b001f0064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000019146100160014f6a76f7da26feb398577fbbe2713395a71ac6ad701
+esplora: value 1643617 type v0_p2wpkh script length 22 spent False
+0x48: sats 1643617 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014f6a76f7da26feb398577fbbe2713395a71ac6ad7
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 32, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00200064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000018cb5c001600144f7d5e656010e2378b8ac8b7160854db0f6f122101
+esplora: value 1624924 type v0_p2wpkh script length 22 spent False
+0x48: sats 1624924 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 00144f7d5e656010e2378b8ac8b7160854db0f6f1221
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 33, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00210064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000018a36c0016001489c4a889884135ce104e6ef5b653ace2a994208301
+esplora: value 1614700 type v0_p2wpkh script length 22 spent False
+0x48: sats 1614700 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 001489c4a889884135ce104e6ef5b653ace2a9942083
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 34, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00220064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000001866ae00160014d69f91ba38a17673dc40340eb443c39c4b9ba26501
+esplora: value 1599150 type v0_p2wpkh script length 22 spent False
+0x48: sats 1599150 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014d69f91ba38a17673dc40340eb443c39c4b9ba265
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 35, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00230064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000018113a00225120270a75013d5ed1a94085c70e52199229f4126b34851f1d29bbf9d4b10273413901
+esplora: value 1577274 type v1_p2tr script length 34 spent False
+0x48: sats 1577274 fullScriptLength 34 returned 34 bytes flag 0x01
+      script 5120270a75013d5ed1a94085c70e52199229f4126b34851f1d29bbf9d4b102734139
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 36, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00240064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000017efbe00160014f8af8e8effc2fef7350a5ca8add1db9809a289bc01
+esplora: value 1568702 type v0_p2wpkh script length 22 spent False
+0x48: sats 1568702 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014f8af8e8effc2fef7350a5ca8add1db9809a289bc
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 37, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00250064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000177abe00160014cb9a2c9b9992d6b3d18604ecbc6e9d96a6c2f7d101
+esplora: value 1538750 type v0_p2wpkh script length 22 spent False
+0x48: sats 1538750 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014cb9a2c9b9992d6b3d18604ecbc6e9d96a6c2f7d1
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 38, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00260064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000171aeb00160014a30d6c4f26c3b3ecedbaef8e9c86734bbedd52da01
+esplora: value 1514219 type v0_p2wpkh script length 22 spent False
+0x48: sats 1514219 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014a30d6c4f26c3b3ecedbaef8e9c86734bbedd52da
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 39, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00270064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000016f9f100160014030994f1e05f1ac7d0caf35db7b5091bd365f92201
+esplora: value 1505777 type v0_p2wpkh script length 22 spent False
+0x48: sats 1505777 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014030994f1e05f1ac7d0caf35db7b5091bd365f922
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 40, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00280064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000016f94600160014946c448db5855afffbd7b2b17af0530e0a7c52f201
+esplora: value 1505606 type v0_p2wpkh script length 22 spent False
+0x48: sats 1505606 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014946c448db5855afffbd7b2b17af0530e0a7c52f2
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 41, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00290064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000016f73100160014730c8ec1153c33341595f69b64fdbc07860a4b1101
+esplora: value 1505073 type v0_p2wpkh script length 22 spent False
+0x48: sats 1505073 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014730c8ec1153c33341595f69b64fdbc07860a4b11
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 42, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b002a0064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000016814f00220020b17bc590ba389d7a82340ae0e55420b99d560b1a74fa5f7883c1e6c59c47bcad01
+esplora: value 1474895 type v0_p2wsh script length 34 spent False
+0x48: sats 1474895 fullScriptLength 34 returned 34 bytes flag 0x01
+      script 0020b17bc590ba389d7a82340ae0e55420b99d560b1a74fa5f7883c1e6c59c47bcad
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 43, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b002b0064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000162d1a001600144f042f60f8243e55dfae6e7013afb2bd8f27218401
+esplora: value 1453338 type v0_p2wpkh script length 22 spent False
+0x48: sats 1453338 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 00144f042f60f8243e55dfae6e7013afb2bd8f272184
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 44, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b002c0064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000015584500160014b868c38c913dfbc59209bf6c7768fdd6fd1887c401
+esplora: value 1398853 type v0_p2wpkh script length 22 spent False
+0x48: sats 1398853 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014b868c38c913dfbc59209bf6c7768fdd6fd1887c4
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 45, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b002d0064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000001504cf00160014387b45693905e0d9ee1a9af0e1b38088001ad0e501
+esplora: value 1377487 type v0_p2wpkh script length 22 spent False
+0x48: sats 1377487 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014387b45693905e0d9ee1a9af0e1b38088001ad0e5
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 46, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b002e0064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000014e2eb00160014f2467eff30f8b3ce2d59abaabc0ef4742f273e6c01
+esplora: value 1368811 type v0_p2wpkh script length 22 spent False
+0x48: sats 1368811 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014f2467eff30f8b3ce2d59abaabc0ef4742f273e6c
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 47, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b002f0064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000014b05200160014b3a28d0e673f1112748f49158eca983e858d32a301
+esplora: value 1355858 type v0_p2wpkh script length 22 spent False
+0x48: sats 1355858 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014b3a28d0e673f1112748f49158eca983e858d32a3
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 48, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00300064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000149285001600148e532960c113c8612fb073f7e4618b6e3b4b8bff01
+esplora: value 1348229 type v0_p2wpkh script length 22 spent False
+0x48: sats 1348229 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 00148e532960c113c8612fb073f7e4618b6e3b4b8bff
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 49, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00310064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000013deec00220020de688eea9c2640799ed7c1f1755411f2e691e0d8cc7989962fb2ea9ecae0310b01
+esplora: value 1302252 type v0_p2wsh script length 34 spent False
+0x48: sats 1302252 fullScriptLength 34 returned 34 bytes flag 0x01
+      script 0020de688eea9c2640799ed7c1f1755411f2e691e0d8cc7989962fb2ea9ecae0310b
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 50, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00320064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000001360c000160014456b2a52f707bdc7285f5982431f535ee3a1626001
+esplora: value 1269952 type v0_p2wpkh script length 22 spent False
+0x48: sats 1269952 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014456b2a52f707bdc7285f5982431f535ee3a16260
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 51, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00330064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000135e0500160014c1dcaa821351778477968adf85eaed0af137568d01
+esplora: value 1269253 type v0_p2wpkh script length 22 spent False
+0x48: sats 1269253 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014c1dcaa821351778477968adf85eaed0af137568d
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 52, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00340064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000001314250016001479dd0f646db0e5cea0f71942e0fb40655debecd001
+esplora: value 1250341 type v0_p2wpkh script length 22 spent False
+0x48: sats 1250341 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 001479dd0f646db0e5cea0f71942e0fb40655debecd0
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 53, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00350064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000b530600017a914413b5901fe4e591c95405fd446b5b002da575bf08701
+esplora: value 11874400 type p2sh script length 23 spent False
+0x48: sats 11874400 fullScriptLength 23 returned 23 bytes flag 0x01
+      script a914413b5901fe4e591c95405fd446b5b002da575bf087
+-> MATCH (value, full length, script bytes)
+
+## C 6ac09b11 vout 54, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x6ac09b111f3819aa66a6d61a467c84f5f023bf30021bcf912038e9162f5a075b00360064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 0 type op_return script length 38 spent False
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 30, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a46001e0064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 1171528 type p2pkh script length 25 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 31, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a46001f0064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 468023 type v0_p2wpkh script length 22 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 32, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600200064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000001f4ac0016001425baba8084886f3a074f464f4bf16dc3e1bec94601
+esplora: value 128172 type v0_p2wpkh script length 22 spent False
+0x48: sats 128172 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 001425baba8084886f3a074f464f4bf16dc3e1bec946
+-> MATCH (value, full length, script bytes)
+
+## C 3ba6a454 vout 33, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600210064 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000014b78001600144691d3623bf454252e598f3f21aaebb81abc10ab01
+esplora: value 84856 type v0_p2wpkh script length 22 spent False
+0x48: sats 84856 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 00144691d3623bf454252e598f3f21aaebb81abc10ab
+-> MATCH (value, full length, script bytes)
+
+## C 3ba6a454 vout 34, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600220064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 9232373 type v0_p2wpkh script length 22 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 35, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600230064 --rpc-url https://rpc.hemi.network/rpc
+0x000000000006ddd00017a914ff6af982e2b0d759a1748637b7a2a6b095e4e61b8701
+esplora: value 450000 type p2sh script length 23 spent False
+0x48: sats 450000 fullScriptLength 23 returned 23 bytes flag 0x01
+      script a914ff6af982e2b0d759a1748637b7a2a6b095e4e61b87
+-> MATCH (value, full length, script bytes)
+
+## C 3ba6a454 vout 36, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600240064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000000087f00016001460ebaaf15c38e64210b0b87987a4564677dfc3a901
+esplora: value 34800 type v0_p2wpkh script length 22 spent False
+0x48: sats 34800 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 001460ebaaf15c38e64210b0b87987a4564677dfc3a9
+-> MATCH (value, full length, script bytes)
+
+## C 3ba6a454 vout 37, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600250064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 1487451 type p2pkh script length 25 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 38, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600260064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 192199222 type v0_p2wsh script length 34 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 39, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600270064 --rpc-url https://rpc.hemi.network/rpc
+0x00000000000449af00160014d70b5fd26ed2c9a9fbdbd8b39bdfa9b5ccc89caa01
+esplora: value 281007 type v0_p2wpkh script length 22 spent False
+0x48: sats 281007 fullScriptLength 22 returned 22 bytes flag 0x01
+      script 0014d70b5fd26ed2c9a9fbdbd8b39bdfa9b5ccc89caa
+-> MATCH (value, full length, script bytes)
+
+## C 3ba6a454 vout 40, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600280064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 40657 type v0_p2wpkh script length 22 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+## C 3ba6a454 vout 41, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x3ba6a454b345e429ffccdf542428e4d6bf462cd9b520d0ba22006af03a3b2a4600290064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 176366 type v0_p2wpkh script length 22 spent True
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+# D. Other scripts longer than 64 bytes
+
+## D1 block 1 coinbase vout 0, 67-byte P2PK, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0x0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd51209800000064 --rpc-url https://rpc.hemi.network/rpc
+0x000000012a05f2000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac01
+esplora: value 5000000000 type p2pk script length 67 spent False
+0x48: sats 5000000000 fullScriptLength 67 returned 67 bytes flag 0x01
+      script 410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515...
+-> MATCH (value, full length, script bytes)
+
+## D2 PoP tx vout 1, 83-byte OP_RETURN, max 100
+$ cast call 0x0000000000000000000000000000000000000048 0xd4ed6ec2eaa89b78906efc54c3dd309761bb30ca8a38b6477951033957a6845e00010064 --rpc-url https://rpc.hemi.network/rpc
+0x
+esplora: value 0 type op_return script length 83 spent False
+0x48: empty -> MATCH (empty, as source predicts for a spent, unspendable or missing output)
+
+# E. Malformed input
+
+## E1 35-byte input (max length missing one byte)
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4000000 --rpc-url https://rpc.hemi.network/rpc
+0x
+
+## E2 37-byte input
+$ cast call 0x0000000000000000000000000000000000000048 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea40000006400 --rpc-url https://rpc.hemi.network/rpc
+0x
+
+## E3 txid in internal (reversed) byte order
+$ cast call 0x0000000000000000000000000000000000000048 0xa4ce92db1e2d98128d32ef4fc644d681901876c11a312b224cfc36badc9bcb4300000064 --rpc-url https://rpc.hemi.network/rpc
+0x
+
+## E4 spent fixture vout 1 (spent at block 975330)
+$ cast call 0x0000000000000000000000000000000000000048 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e00010064 --rpc-url https://rpc.hemi.network/rpc
+0x
+
+# 0x44 at end: height 976830 hash 00000000000000000001247e03d1ce6e03f87144e7701c401eba0d7177bbfb4c
+# tally (cases with an Esplora comparison): {'match': 61, 'mismatch': 0}

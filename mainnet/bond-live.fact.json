@@ -1,0 +1,27 @@
+{
+  "schema": "hemi-bitcoin-facts/v1",
+  "kind": "bond",
+  "chainId": "43111",
+  "contract": "0xc527edfeee8972797d74252aa9111a05ea2c9a4e",
+  "id": "0x35bd78a79e524f8f544badf8ddfa2a4fcd236b09897c20d092d142969b0780c4",
+  "fact": {
+    "agent": "0xaa3b6ff39acb56d96dbe1f8458ef907d4fee383f",
+    "txid": "0x2703bb4e3db81770451b30bfe162903489044de78d9db734e630e59e82cfdd91",
+    "vout": "0",
+    "tagVout": "1",
+    "sats": "20000",
+    "locktime": "1795567066",
+    "witnessProgram": "0xca6d154ea63786e491bf77d2b0f7cb3fd8d763c8f7628463878b38b7162fe1f7",
+    "confirmations": "8",
+    "witnessScript": "0x04da2d066bb1752103471af6d374a8c726a1653f72b2bf2b75f5dceb0c6effb53e8e74156872e4fba6ac"
+  },
+  "asOf": {
+    "btcHeight": "977310",
+    "btcBlockHash": "0x000000000000000000006d81765c17069084dd5a783f57200afdcaa4b2ad3f97"
+  },
+  "recording": {
+    "txHash": "0xe3c74949cfef057d7771f11e257086a84fec32db7f45425239c6357f76b7543b",
+    "blockNumber": "5801699",
+    "blockHash": "0x6b5ebfa8fbcd29f2c96b2aa46750615fa190fd8d5136924b71c360c8fbbd1e50"
+  }
+}

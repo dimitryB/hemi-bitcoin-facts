@@ -1,0 +1,23 @@
+{
+  "schema": "hemi-bitcoin-facts/v1",
+  "kind": "publication",
+  "chainId": "43111",
+  "contract": "0x0706c1582e7c27c09953803384396efd4fa62486",
+  "id": "0xbf89e5edf092b54c02aaddd4d40a524e227ed70def4215dba37634caadb17b30",
+  "fact": {
+    "keystone": "5793025",
+    "btcTxid": "0x2852bddd3ed0755cd60cfb66509e54f1a4608f87050f0efe40d23161e978eb3a",
+    "vout": "1",
+    "confirmations": "23",
+    "abrev": "0x010193f38800586501be7fb4a344dc10e36d825a4e92dac170e006e7a83ac2d46d6fb3bc8b52e861b7f84a62764137b8ac3db02fb48f3bd5388e4a12f56130ce186a67426e76de6ab635c57c"
+  },
+  "asOf": {
+    "btcHeight": "977127",
+    "btcBlockHash": "0x00000000000000000000201a915c332a09318405e8e0fdad0887ed9d4b6aafec"
+  },
+  "recording": {
+    "txHash": "0x79d4c6822e757d0446d31a933690e402788374fd58fdfd69a8339f9a16a41a38",
+    "blockNumber": "5794231",
+    "blockHash": "0x4aff1ec0907ea840eaacafe3f816efcbd6d9796170a0e380ea9998751c7799b3"
+  }
+}

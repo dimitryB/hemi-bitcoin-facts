@@ -1,0 +1,61 @@
+# S8 run at Hemi block 5780380 (2026-11-21T03:21:12Z)
+
+## EIP-2935 history contract code
+$ cast code 0x0000F90827F1C53a10cb7A02335B175320002935 --rpc-url https://rpc.hemi.network/rpc
+0x3373fffffffffffffffffffffffffffffffffffffffe14604657602036036042575f35600143038111604257611fff81430311604257611fff9006545f5260205ff35b5f5ffd5b5f35611fff60014303065500
+
+## EIP-4788 beacon roots contract code (Cancun system contract, for comparison)
+$ cast code 0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02 --rpc-url https://rpc.hemi.network/rpc
+0x3373fffffffffffffffffffffffffffffffffffffffe14604d57602036146024575f5ffd5b5f35801560495762001fff810690815414603c575f5ffd5b62001fff01545f5260205ff35b5f5ffd5b62001fff42064281555f359062001fff015500
+
+## blockhash() at depths 1, 255, 256, 257, 300; EIP-2935 get() at depths 1, 1000, 8000, 8191, 8192 (pinned to block 5780380)
+$ cast call 0x51ce000000000000000000000000000000000001 hashes(uint256[],uint256[])(uint256,bytes32[],bool[],bytes32[]) [1,255,256,257,300] [1,1000,8000,8191,8192] --block 5780380 --override-code 0x51ce000000000000000000000000000000000001:<probe runtime, spike/out/probe-runtime.hex> --rpc-url https://rpc.hemi.network/rpc
+5780380 [5.78e6]
+[0x092f6954e03e889f92fe5aab5ba45d6b477606384b43bfb5c3f82f00ef7e24de, 0x8eb70108606476b5fd20893905898e5a0ccec0faed2029ee8cd99c1e8c5dc136, 0x75adcdaea900f98ac0fdc8cafe1103d402d070230590bba9ef812dc9ef96c84a, 0x0000000000000000000000000000000000000000000000000000000000000000, 0x0000000000000000000000000000000000000000000000000000000000000000]
+[true, true, true, true, false]
+[0x092f6954e03e889f92fe5aab5ba45d6b477606384b43bfb5c3f82f00ef7e24de, 0x4f2195db3519a816a8a6dded0c4247c52766fea71f46794979508ac9afe8ce66, 0xdfcda535f4d98bc5c6d2a07420501fbf7050fc70ce5d3dfc6c2b6040631e864a, 0x9b0364b00229a6b765e253787da58f847c47e0d4094924c8962b05d63521768e, 0x0000000000000000000000000000000000000000000000000000000000000000]
+
+## reference hashes from eth_getBlockByNumber
+block 5780379 (N-1): 0x092f6954e03e889f92fe5aab5ba45d6b477606384b43bfb5c3f82f00ef7e24de
+block 5780125 (N-255): 0x8eb70108606476b5fd20893905898e5a0ccec0faed2029ee8cd99c1e8c5dc136
+block 5780124 (N-256): 0x75adcdaea900f98ac0fdc8cafe1103d402d070230590bba9ef812dc9ef96c84a
+block 5780123 (N-257): 0x59b47969e90ae72c7ed958e8301080a597e550503e32303fac4ef7cd72eb5015
+block 5780080 (N-300): 0x51254f780e6c30af578c947408e9417fba6f3a5483b870b9f72bd65ca3ddb45d
+block 5779380 (N-1000): 0x4f2195db3519a816a8a6dded0c4247c52766fea71f46794979508ac9afe8ce66
+block 5772380 (N-8000): 0xdfcda535f4d98bc5c6d2a07420501fbf7050fc70ce5d3dfc6c2b6040631e864a
+block 5772189 (N-8191): 0x9b0364b00229a6b765e253787da58f847c47e0d4094924c8962b05d63521768e
+block 5772188 (N-8192): 0x39d33631657a8f4587b4b02a256bfac2824b3615da7949e05cd75aedd8c21821
+
+## raw call to the EIP-2935 contract (32-byte block number), N-1000 and N-8000
+$ cast call 0x0000F90827F1C53a10cb7A02335B175320002935 0x0000000000000000000000000000000000000000000000000000000000582fb4 --block 5780380 --rpc-url https://rpc.hemi.network/rpc
+0x4f2195db3519a816a8a6dded0c4247c52766fea71f46794979508ac9afe8ce66
+
+$ cast call 0x0000F90827F1C53a10cb7A02335B175320002935 0x000000000000000000000000000000000000000000000000000000000058145c --block 5780380 --rpc-url https://rpc.hemi.network/rpc
+0xdfcda535f4d98bc5c6d2a07420501fbf7050fc70ce5d3dfc6c2b6040631e864a
+
+## fork activation: GasPriceOracle flags and the newest header's fields
+$ cast call 0x420000000000000000000000000000000000000F isEcotone()(bool) --rpc-url https://rpc.hemi.network/rpc
+true
+
+$ cast call 0x420000000000000000000000000000000000000F isFjord()(bool) --rpc-url https://rpc.hemi.network/rpc
+true
+
+$ cast call 0x420000000000000000000000000000000000000F isIsthmus()(bool) --rpc-url https://rpc.hemi.network/rpc
+true
+
+$ cast call 0x420000000000000000000000000000000000000F isJovian()(bool) --rpc-url https://rpc.hemi.network/rpc
+Error: server returned an error response: error code 3: execution reverted, data: "0x"
+
+$ cast call 0x420000000000000000000000000000000000000F version()(string) --rpc-url https://rpc.hemi.network/rpc
+"1.4.0"
+
+$ cast rpc eth_getBlockByNumber latest false --rpc-url https://rpc.hemi.network/rpc | jq '{number, requestsHash, withdrawalsRoot, blobGasUsed, excessBlobGas, parentBeaconBlockRoot}'
+{"number":"0x58339d","requestsHash":"0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","withdrawalsRoot":"0x8be853689961980674833fd48202b703e36d806100a2eef859acddf8cd0a73b2","blobGasUsed":"0x0","excessBlobGas":"0x0","parentBeaconBlockRoot":"0xbab5e48cdd572e3e7653f4e53c7e2d535ad5ad3829d563d526ff091dfd881bef"}
+
+## first transaction of the newest block (L1-info deposit selector: 0x098999be Isthmus, 0x440a5e20 Ecotone)
+{"number":"0x58339d","firstTxTo":"0x4200000000000000000000000000000000000015","selector":"0x098999be"}
+
+## a Prague opcode-level check: EIP-7702 / BLS precompile 0x0b (Prague, in OP Isthmus) with empty input
+$ cast call 0x000000000000000000000000000000000000000b 0x --rpc-url https://rpc.hemi.network/rpc
+Error: server returned an error response: error code -32000: invalid input length
+

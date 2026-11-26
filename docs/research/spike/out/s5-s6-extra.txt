@@ -1,0 +1,8 @@
+# S5 extra: made-up txid through the probe with no cap (cap = 2^256-1, so the CALL forwards 63/64 of what is left)
+eth_call gas 1000000: probe(0x43, made-up, cap max) -> (ok, used) = (False, 961653)
+eth_call gas 10000000: probe(0x43, made-up, cap max) -> (ok, used) = (False, 9821028)
+# S6 extra: 0x45 on Hemi testnet (client c1771608, same heminetwork tbcd code)
+cast call 0x0000000000000000000000000000000000000045 0x0051f96e --rpc-url https://testnet.rpc.hemi.network/rpc  -> 0x  (height 5372270; testnet 0x44 height 5372270)
+cast call 0x0000000000000000000000000000000000000045 0x0051f964 --rpc-url https://testnet.rpc.hemi.network/rpc  -> 0x  (height 5372260; testnet 0x44 height 5372270)
+cast call 0x0000000000000000000000000000000000000045 0x0051f586 --rpc-url https://testnet.rpc.hemi.network/rpc  -> 0x  (height 5371270; testnet 0x44 height 5372270)
+cast call 0x0000000000000000000000000000000000000045 0x00000001 --rpc-url https://testnet.rpc.hemi.network/rpc  -> 0x  (height 1; testnet 0x44 height 5372270)

@@ -1,0 +1,36 @@
+# bitcoind on regtest for the bond gate (docs/BRIEF.md "Bitcoin side"; docs/DECISIONS.md D-021).
+#
+#   docker compose -f regtest/docker-compose.yml up -d --wait     # or: regtest/run.sh, which also runs the test
+#   docker compose -f regtest/docker-compose.yml down -v
+#
+# Image: bitcoin/bitcoin, Bitcoin Core 32.1 (the newest stable release on 2026-11-21), pinned by tag and by the
+# multi-arch index digest so every run uses the same bytes. These images are built from the Bitcoin Core release
+# binaries by a Bitcoin Core contributor (github.com/willcl-ark/bitcoin-core-docker), are aimed at testing, and
+# have amd64 and arm64 variants. They are not endorsed by the Bitcoin Core project.
+#
+# Regtest only: the RPC credentials are fixed test values, the port is bound to 127.0.0.1, and the chain lives in
+# a tmpfs, so every `up` starts from the genesis block.
+name: hbf-regtest
+services:
+  bitcoind:
+    image: bitcoin/bitcoin:32.1@sha256:d2454aaf2ff4ce1ebbc49f4aa05ed044c907b849a80a3f4c0ad23e488e50bbe0
+    command:
+      - -regtest=1
+      - -server=1
+      - -txindex=1
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcport=18443
+      - -rpcuser=hbf
+      - -rpcpassword=hbf-regtest-only
+      - -fallbackfee=0.0001
+      - -printtoconsole=1
+    ports:
+      - "127.0.0.1:${HBF_REGTEST_PORT:-18443}:18443"
+    tmpfs:
+      - /home/bitcoin/.bitcoin
+    healthcheck:
+      test: ["CMD", "bitcoin-cli", "-regtest", "-rpcport=18443", "-rpcuser=hbf", "-rpcpassword=hbf-regtest-only", "getblockchaininfo"]
+      interval: 1s
+      timeout: 5s
+      retries: 60

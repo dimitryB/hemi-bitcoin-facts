@@ -1,0 +1,22 @@
+{
+  "schema": "hemi-bitcoin-facts/v1",
+  "kind": "balance",
+  "chainId": "43111",
+  "contract": "0xaecbc8f5f6bb401c7d8a7625f53fe2225b730ffc",
+  "id": "0xf55d6f08d62e7206bf78867b9fb696e054e03845fae79ef07e97136c54bcb89f",
+  "fact": {
+    "scriptHash": "0x805b1e6b4410cab90f524f41bbbebd2302fc9628a3b56a344b6d16a994c2791e",
+    "sats": "1000",
+    "scriptLength": "22",
+    "script": "0x001466991504b673fa2d7d9ad8b4a4f76e4d3b8ec831"
+  },
+  "asOf": {
+    "btcHeight": "977125",
+    "btcBlockHash": "0x000000000000000000015a1229b9d724ef6dcf3a0f1cb573da455bf3aa9cbe4f"
+  },
+  "recording": {
+    "txHash": "0x0f099b76ace7f8a159b1a9154fd3bf2a5597d866376ce97fdf2af88fa6f2bbe1",
+    "blockNumber": "5794076",
+    "blockHash": "0xb14ad19afeb3b8e81393ef3751c0d6f923581fd96ae8a0c30b0270bd0c553d12"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "note": "Written by test/bond.regtest.test.ts (npm run test:regtest -- --update-fixture): a funding transaction bitcoind accepted on regtest, and its redeem. test/bond.e2e.test.ts replays its outputs into MockHvm.",
+  "bitcoind": "bitcoin/bitcoin:32.1 (regtest)",
+  "bondFile": {
+    "schema": "hemi-bitcoin-facts/bond-file/v1",
+    "network": "regtest",
+    "chainId": "31337",
+    "contract": "0xc527edfeee8972797d74252aa9111a05ea2c9a4e",
+    "agent": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+    "txid": "0x0000961d7ad9fcfa91b853a23d3f063c44a5e4a04569e477969adc837e397fb3",
+    "bondVout": "0",
+    "tagVout": "1",
+    "sats": "50000",
+    "locktime": "2000000000",
+    "locktimeIso": "2033-05-18T03:33:20Z",
+    "pubkey": "0x025b5abceeada865ea5a2167385ee655e2e0f97a127d334c87e3b27a48913b339b",
+    "witnessScript": "0x0400943577b17521025b5abceeada865ea5a2167385ee655e2e0f97a127d334c87e3b27a48913b339bac",
+    "bondScript": "0x00206acb6883ada8a3c0d48d930daef2168a8488dfc7ba40378aa377b25f050625bb",
+    "bondAddress": "bcrt1qdt9k3qad4z3up4ydjvx6ausk32zg3h78hfqr0z4rw7e97pgxykas02v762",
+    "tagScript": "0x6a304846423100007a69c527edfeee8972797d74252aa9111a05ea2c9a4e70997970c51812dc3a010c7d01b50e0d17dc79c8",
+    "fundingAddress": "bcrt1qr8hdp73cawntawup4khxwj776qes73fht0sgxt",
+    "fee": "424",
+    "feeRate": "2",
+    "hex": "0x02000000000101dbed703fc849b066904a917ab5c821ee4f961c06f5c0065c0aa06703b5543e860100000000ffffffff0350c30000000000002200206acb6883ada8a3c0d48d930daef2168a8488dfc7ba40378aa377b25f050625bb0000000000000000326a304846423100007a69c527edfeee8972797d74252aa9111a05ea2c9a4e70997970c51812dc3a010c7d01b50e0d17dc79c8487d0e000000000016001419eed0fa38eba6bebb81adae674bded0330f4537024730440220665bf41256e7a2e62d8430143b527ad8b6e897f93cc05d5912d2c3f6913c2d28022074b3b4d4cfe3c19aec32807231c840bf00cdb2fd48ab65e523fdfe144a1bdf0b0121025b5abceeada865ea5a2167385ee655e2e0f97a127d334c87e3b27a48913b339b00000000"
+  },
+  "outputs": [
+    {
+      "sats": "50000",
+      "script": "0x00206acb6883ada8a3c0d48d930daef2168a8488dfc7ba40378aa377b25f050625bb"
+    },
+    {
+      "sats": "0",
+      "script": "0x6a304846423100007a69c527edfeee8972797d74252aa9111a05ea2c9a4e70997970c51812dc3a010c7d01b50e0d17dc79c8"
+    },
+    {
+      "sats": "949576",
+      "script": "0x001419eed0fa38eba6bebb81adae674bded0330f4537"
+    }
+  ],
+  "earlyRedeemRejection": "redeem refused: bitcoind 127.0.0.1:18443 rejected the transaction: non-final (RPC code -26)",
+  "redeemTxid": "1258cab08eddb326c974b11e07729a51baa8de242596e63d2bc580cfc2801bbd"
+}

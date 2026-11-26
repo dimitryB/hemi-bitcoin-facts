@@ -1,0 +1,163 @@
+# CI for hemi-bitcoin-facts.
+#
+# Every pull request to main and every push to main runs the offline checks:
+#   contracts  forge build, then every forge suite but the four *ForkTest ones: unit, fuzz, review and audit suites
+#   sdk        tsc, then `npm test` with HBF_E2E_NO_FORK=1 (the e2e tests on a plain local anvil)
+#   regtest    regtest/run.sh: the bond create/redeem gate on bitcoind regtest in Docker
+#
+# The mainnet-reads job runs only on the weekly schedule and on a manual run (Actions > CI > Run workflow):
+#   the four *ForkTest suites, `npm test` on an anvil fork of Hemi mainnet, and ./check-live.sh mainnet.
+# They read Hemi mainnet through the public RPC (about 300 requests a minute, shared by everyone behind the same
+# IP), are paced for one run at a time, and fork at the latest block, so they are kept off pull requests. A
+# repository secret HEMI_RPC_URL, if set, replaces the public RPC for that job.
+#
+# Nothing here sends a transaction to Hemi or Bitcoin mainnet: the e2e tests send theirs to a local anvil (chain id
+# 31337, forked or not) and the regtest gate to its own bitcoind. No job reads a secret but that optional RPC URL.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "23 6 * * 1" # Mondays 06:23 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # The Foundry the project was built and reviewed with: forge 1.8.6, commit 6bad0a6
+  # (docs/SECURITY-AUDIT.md). Not named FOUNDRY_*: forge reads FOUNDRY_* variables as config.
+  CI_FOUNDRY_VERSION: v1.8.6
+  # sdk/package.json engines: node >= 22.18. CI runs the floor.
+  CI_NODE_VERSION: "22.18.0"
+
+jobs:
+  contracts:
+    name: contracts (forge build, offline suites)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: ${{ env.CI_FOUNDRY_VERSION }}
+          cache: false
+      - run: forge --version
+      - name: forge build
+        working-directory: contracts
+        run: forge build
+      - name: forge test (every suite but *ForkTest)
+        working-directory: contracts
+        run: forge test --no-match-contract ForkTest -vvv
+
+  sdk:
+    name: sdk (tsc, npm test without a fork)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The tests build contracts/ with forge and run their e2e cases on anvil.
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: ${{ env.CI_FOUNDRY_VERSION }}
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.CI_NODE_VERSION }}
+          package-manager-cache: false
+      # sdk/package-lock.json pins every package (docs/DECISIONS.md D-016).
+      - name: npm ci
+        working-directory: sdk
+        run: npm ci --no-audit --no-fund
+      - name: tsc
+        working-directory: sdk
+        run: npx tsc --noEmit -p .
+      - name: npm test (HBF_E2E_NO_FORK=1)
+        working-directory: sdk
+        env:
+          HBF_E2E_NO_FORK: "1"
+        run: npm test
+
+  regtest:
+    name: regtest (bond gate, bitcoind in Docker)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.CI_NODE_VERSION }}
+          package-manager-cache: false
+      # sdk/package-lock.json pins every package (docs/DECISIONS.md D-016).
+      - name: npm ci
+        working-directory: sdk
+        run: npm ci --no-audit --no-fund
+      - run: regtest/run.sh
+
+  mainnet-reads:
+    name: mainnet reads (fork suites, SDK on a fork, check-live)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    # One run at a time against the public RPC, across the whole repository.
+    concurrency:
+      group: hemi-mainnet-rpc
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: ${{ env.CI_FOUNDRY_VERSION }}
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.CI_NODE_VERSION }}
+          package-manager-cache: false
+      - name: Use HEMI_RPC_URL if set
+        env:
+          URL: ${{ secrets.HEMI_RPC_URL }}
+        run: |
+          if [ -n "$URL" ]; then
+            { echo "HEMI_FORK_URL=$URL"; echo "HBF_FORK_URL=$URL"; echo "HEMI_MAINNET_RPC_URL=$URL"; } >> "$GITHUB_ENV"
+            echo "using the HEMI_RPC_URL secret"
+          else
+            echo "using the public RPC, https://rpc.hemi.network/rpc"
+          fi
+      # sdk/package-lock.json pins every package (docs/DECISIONS.md D-016).
+      - name: npm ci
+        working-directory: sdk
+        run: npm ci --no-audit --no-fund
+      # Each step below is paced to fit the public RPC's 300 requests a minute on its own, not back to back: run
+      # straight after the fork suites, bond.e2e's setup got HTTP 429 and its file was cancelled. So each waits
+      # for the minute to pass, and runs even if the one before failed, so that every check reports.
+      - name: forge test (the four *ForkTest suites, one at a time)
+        working-directory: contracts
+        run: forge test --match-contract ForkTest -j 1 -vvv
+      - name: Wait out the RPC's rate window
+        if: ${{ !cancelled() }}
+        run: sleep 65
+      - name: npm test (e2e on an anvil fork of Hemi mainnet)
+        if: ${{ !cancelled() }}
+        working-directory: sdk
+        run: npm test
+      - name: Wait out the RPC's rate window
+        if: ${{ !cancelled() }}
+        run: sleep 65
+      - name: check-live.sh mainnet (read-only)
+        if: ${{ !cancelled() }}
+        run: ./check-live.sh mainnet

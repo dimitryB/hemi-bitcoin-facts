@@ -1,0 +1,126 @@
+# S5. 0x43 btcTxConfirmations against Esplora
+
+## round 1: 0x44 height 976831; Esplora tip mempool.space 976833, blockstream 976833
+$ cast call 0x0000000000000000000000000000000000000043 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4 --rpc-url https://rpc.hemi.network/rpc
+0x0000063a
+unspent fixture: block 975240; 0x43 = 1594; Esplora tip-h+1 = 1594 (offset 0); 0x44 height-h+1 = 1592 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000043 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e --rpc-url https://rpc.hemi.network/rpc
+0x0000066d
+spent fixture: block 975189; 0x43 = 1645; Esplora tip-h+1 = 1645 (offset 0); 0x44 height-h+1 = 1643 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000043 0xd4ed6ec2eaa89b78906efc54c3dd309761bb30ca8a38b6477951033957a6845e --rpc-url https://rpc.hemi.network/rpc
+0x00000c10
+PoP 5620225: block 973746; 0x43 = 3088; Esplora tip-h+1 = 3088 (offset 0); 0x44 height-h+1 = 3086 (offset 2)
+
+## round 2: 0x44 height 976831; Esplora tip mempool.space 976833, blockstream 976833
+$ cast call 0x0000000000000000000000000000000000000043 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4 --rpc-url https://rpc.hemi.network/rpc
+0x0000063a
+unspent fixture: block 975240; 0x43 = 1594; Esplora tip-h+1 = 1594 (offset 0); 0x44 height-h+1 = 1592 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000043 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e --rpc-url https://rpc.hemi.network/rpc
+0x0000066d
+spent fixture: block 975189; 0x43 = 1645; Esplora tip-h+1 = 1645 (offset 0); 0x44 height-h+1 = 1643 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000043 0xd4ed6ec2eaa89b78906efc54c3dd309761bb30ca8a38b6477951033957a6845e --rpc-url https://rpc.hemi.network/rpc
+0x00000c10
+PoP 5620225: block 973746; 0x43 = 3088; Esplora tip-h+1 = 3088 (offset 0); 0x44 height-h+1 = 3086 (offset 2)
+
+## round 3: 0x44 height 976831; Esplora tip mempool.space 976833, blockstream 976833
+$ cast call 0x0000000000000000000000000000000000000043 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4 --rpc-url https://rpc.hemi.network/rpc
+0x0000063a
+unspent fixture: block 975240; 0x43 = 1594; Esplora tip-h+1 = 1594 (offset 0); 0x44 height-h+1 = 1592 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000043 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e --rpc-url https://rpc.hemi.network/rpc
+0x0000066d
+spent fixture: block 975189; 0x43 = 1645; Esplora tip-h+1 = 1645 (offset 0); 0x44 height-h+1 = 1643 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000043 0xd4ed6ec2eaa89b78906efc54c3dd309761bb30ca8a38b6477951033957a6845e --rpc-url https://rpc.hemi.network/rpc
+0x00000c10
+PoP 5620225: block 973746; 0x43 = 3088; Esplora tip-h+1 = 3088 (offset 0); 0x44 height-h+1 = 3086 (offset 2)
+
+## made-up txid deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+$ cast call 0x0000000000000000000000000000000000000043 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef --rpc-url https://rpc.hemi.network/rpc
+ERROR: code -32000 tx not found: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+$ cast call 0x0000000000000000000000000000000000000043 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef --rpc-url https://rpc.hemi.network/rpc --gas-limit 30000
+ERROR: code -32000 tx not found: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+-- estimateGas of the raw call (no cap):
+$ cast estimate 0x0000000000000000000000000000000000000043 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef --rpc-url https://rpc.hemi.network/rpc
+ERROR: code -32000 tx not found: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+-- through the probe (staticcall with an explicit gas cap; gas measured with gasleft()):
+probe(0x43, made-up txid, gasCap 6000) -> ok, used, ret = (False, 6317, '0x')
+probe(0x43, made-up txid, gasCap 30000) -> ok, used, ret = (False, 30317, '0x')
+probe(0x43, made-up txid, gasCap 100000) -> ok, used, ret = (False, 100317, '0x')
+probe(0x43, made-up txid, gasCap 1000000) -> ok, used, ret = (False, 1000317, '0x')
+probe(0x43, unspent fixture, gasCap 6000) -> ok, used, ret = (True, 5386, '0x0000063a')
+probe(0x43, unspent fixture, gasCap 30000) -> ok, used, ret = (True, 5386, '0x0000063a')
+probe(0x43, 31-byte input, gasCap 30000) -> (True, 5317, '0x')
+probe(0x43, made-up txid, gasCap 4999 (below the 5000 charge)) -> (False, 5316, '0x')
+probe(no-code address 0x…dead, empty, gasCap 30000) -> baseline (True, 2811, '0x')
+
+# S6. 0x45 btcHeaderN around the tip
+0x44 height 976831 hash 00000000000000000001fa1553bcdb6adec75005a2e1e54dc8282e886241cfe5; Esplora tip 976835
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7c3 --rpc-url https://rpc.hemi.network/rpc
+0x
+tip = 976835: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7c2 --rpc-url https://rpc.hemi.network/rpc
+0x
+tip-1 = 976834: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7c1 --rpc-url https://rpc.hemi.network/rpc
+0x
+tip-2 = 976833: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7c0 --rpc-url https://rpc.hemi.network/rpc
+0x
+tip-3 = 976832: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7b9 --rpc-url https://rpc.hemi.network/rpc
+0x
+tip-10 = 976825: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7bf --rpc-url https://rpc.hemi.network/rpc
+0x
+0x44 height = 976831: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000ee7c0 --rpc-url https://rpc.hemi.network/rpc
+0x
+0x44 height + 1 = 976832: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x00000001 --rpc-url https://rpc.hemi.network/rpc
+0x
+1 = 1: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x00000000 --rpc-url https://rpc.hemi.network/rpc
+0x
+0 = 0: EMPTY
+$ cast call 0x0000000000000000000000000000000000000045 0x000000 --rpc-url https://rpc.hemi.network/rpc  # 3-byte input
+0x
+
+# S7. Same calls at latest, latest-100 and latest-7200 Hemi blocks
+fresh address bc1qfa74uetqzr3r0zu2ezm3vzz5mv8k7y3p77fefe: Esplora chain_stats {'funded_txo_count': 206, 'funded_txo_sum': 261101018, 'spent_txo_count': 205, 'spent_txo_sum': 259476094, 'tx_count': 401}, mempool {'funded_txo_count': 0, 'funded_txo_sum': 0, 'spent_txo_count': 0, 'spent_txo_sum': 0, 'tx_count': 0}, tx heights [976790, 976767, 976760, 976703, 976681, 976542, 976530, 976515, 976476, 976470, 976415, 976388, 976377, 976347, 976341, 976239, 976222, 976079, 976071, 975907, 975898, 975750, 975744, 975742, 975637] (block 976790 is about 7 h before the spike)
+
+## latest: Hemi block 5780432 (timestamp 1795231895)
+$ cast call 0x0000000000000000000000000000000000000044 0x --rpc-url https://rpc.hemi.network/rpc --block 5780432
+-> height 976833 hash 000000000000000000019ada2495c08b2f353705b20f8d653ad2fe492b51249a
+$ cast call 0x0000000000000000000000000000000000000040 0x62633171763676333270396b7730617a366c76366d7a363266616d7766356163616a703377796e747361 --rpc-url https://rpc.hemi.network/rpc --block 5780432
+-> 0x00000000000003e8 = 1000 sats (bc1qv6v32p9kw0az6lv6mz62famwf5acajp3wyntsa)
+$ cast call 0x0000000000000000000000000000000000000040 0x6263317166613734756574717a723372307a7532657a6d33767a7a356d76386b37793370373766656665 --rpc-url https://rpc.hemi.network/rpc --block 5780432
+-> 0x000000000018cb5c = 1624924 sats (bc1qfa74uetqzr3r0zu2ezm3vzz5mv8k7y3p77fefe)
+$ cast call 0x0000000000000000000000000000000000000043 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4 --rpc-url https://rpc.hemi.network/rpc --block 5780432
+-> 0x0000063c = 1596
+$ cast call 0x0000000000000000000000000000000000000043 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e --rpc-url https://rpc.hemi.network/rpc --block 5780432
+-> 0x0000066f = 1647
+
+## latest-100: Hemi block 5780332 (timestamp 1795230695)
+$ cast call 0x0000000000000000000000000000000000000044 0x --rpc-url https://rpc.hemi.network/rpc --block 5780332
+-> height 976833 hash 000000000000000000019ada2495c08b2f353705b20f8d653ad2fe492b51249a
+$ cast call 0x0000000000000000000000000000000000000040 0x62633171763676333270396b7730617a366c76366d7a363266616d7766356163616a703377796e747361 --rpc-url https://rpc.hemi.network/rpc --block 5780332
+-> 0x00000000000003e8 = 1000 sats (bc1qv6v32p9kw0az6lv6mz62famwf5acajp3wyntsa)
+$ cast call 0x0000000000000000000000000000000000000040 0x6263317166613734756574717a723372307a7532657a6d33767a7a356d76386b37793370373766656665 --rpc-url https://rpc.hemi.network/rpc --block 5780332
+-> 0x000000000018cb5c = 1624924 sats (bc1qfa74uetqzr3r0zu2ezm3vzz5mv8k7y3p77fefe)
+$ cast call 0x0000000000000000000000000000000000000043 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4 --rpc-url https://rpc.hemi.network/rpc --block 5780332
+-> 0x0000063c = 1596
+$ cast call 0x0000000000000000000000000000000000000043 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e --rpc-url https://rpc.hemi.network/rpc --block 5780332
+-> 0x0000066f = 1647
+
+## latest-7200: Hemi block 5773232 (timestamp 1795145495)
+$ cast call 0x0000000000000000000000000000000000000044 0x --rpc-url https://rpc.hemi.network/rpc --block 5773232
+-> height 976833 hash 000000000000000000019ada2495c08b2f353705b20f8d653ad2fe492b51249a
+$ cast call 0x0000000000000000000000000000000000000040 0x62633171763676333270396b7730617a366c76366d7a363266616d7766356163616a703377796e747361 --rpc-url https://rpc.hemi.network/rpc --block 5773232
+-> 0x00000000000003e8 = 1000 sats (bc1qv6v32p9kw0az6lv6mz62famwf5acajp3wyntsa)
+$ cast call 0x0000000000000000000000000000000000000040 0x6263317166613734756574717a723372307a7532657a6d33767a7a356d76386b37793370373766656665 --rpc-url https://rpc.hemi.network/rpc --block 5773232
+-> 0x000000000018cb5c = 1624924 sats (bc1qfa74uetqzr3r0zu2ezm3vzz5mv8k7y3p77fefe)
+$ cast call 0x0000000000000000000000000000000000000043 0x43cb9bdcba36fc4c222b311ac176189081d644c64fef328d12982d1edb92cea4 --rpc-url https://rpc.hemi.network/rpc --block 5773232
+-> 0x0000063c = 1596
+$ cast call 0x0000000000000000000000000000000000000043 0x95bca0291cdecef1dc71c3ff174ed827f6b34ada52c6f32649e85449ce9d367e --rpc-url https://rpc.hemi.network/rpc --block 5773232
+-> 0x0000066f = 1647
+
+(eth_blockNumber at start of S7: 5780432)

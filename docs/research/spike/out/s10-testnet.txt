@@ -1,0 +1,27 @@
+# S10 testnet run at 2026-11-21T03:32:44Z
+$ cast chain-id --rpc-url https://testnet.rpc.hemi.network/rpc
+743111
+$ cast rpc web3_clientVersion --rpc-url https://testnet.rpc.hemi.network/rpc
+Geth/v0.1.0-untagged-c1771608-20261005/linux-amd64/go1.24.2
+$ cast call 0x0000000000000000000000000000000000000044 0x --rpc-url https://testnet.rpc.hemi.network/rpc
+0x0051f96d00000000000000ee0b901065dccca540d91aa26f6ff4b2444155127ce5d450602419c00000000000000000f6208a86dcdb1a03b9b51cf12439f62649d6a2c359168a4437a70cb53b2b787a59e525c5a1bd09f5151e9ba5b73eaf5905a1eee8196b24d3756b01219c1a00ffffbb7a647a
+0x44: height 5372269 hash 00000000000000ee0b901065dccca540d91aa26f6ff4b2444155127ce5d45060 time 1795236252 (2026-11-21T04:44:12Z)
+testnet3 (https://mempool.space/testnet/api): tip 5372271; block at 5372269 = 00000000000000ee0b901065dccca540d91aa26f6ff4b2444155127ce5d45060 -> MATCH; lag 2 blocks
+testnet4: esplora error HTTP Error 404: Not Found
+signet: esplora error HTTP Error 404: Not Found
+testnet3 tip 5372271 time 1795238654 (2026-11-21T05:24:14Z); 0x44 header is 0.7 h older than the tip
+
+fixture: testnet3 tx eee10fe6c3aff3111cdded461943350bb310239f85254f1bbc92e06e8a19d5bd in block 5372263, vout 0: 5000 sats p2pkh n1hDD6zeYAhvsT2tkPVQCzjfgLNZDBgZQL; esplora outspend now: {'spent': False}
+$ cast call 0x0000000000000000000000000000000000000043 0xeee10fe6c3aff3111cdded461943350bb310239f85254f1bbc92e06e8a19d5bd --rpc-url https://testnet.rpc.hemi.network/rpc --gas-limit 30000
+0x00000009
+0x43 = 9; testnet3 tip-h+1 = 9 (offset 0); 0x44 height-h+1 = 7 (offset 2)
+$ cast call 0x0000000000000000000000000000000000000048 0xeee10fe6c3aff3111cdded461943350bb310239f85254f1bbc92e06e8a19d5bd00000064 --rpc-url https://testnet.rpc.hemi.network/rpc
+0x0000000000001388001976a914dd53201bb20d1b50c206f558f39366f4ec10d10c88ac01
+0x48: sats 5000 len 25 flag 0x01 -> MATCH vs Esplora
+$ cast call 0x0000000000000000000000000000000000000040 0x6e31684444367a6559416876735432746b505651437a6a66674c4e5a4442675a514c --rpc-url https://testnet.rpc.hemi.network/rpc
+0x00000000001c7c04
+0x40 n1hDD6zeYAhvsT2tkPVQCzjfgLNZDBgZQL = 1866756; Esplora balance as of height 5372269 (from 457 txs at heights [5372263, 5372250, 5372234, 5372037, 5372019, 5371838, 5371827, 5371816, 5371534, 5371516]) = 1866756 -> MATCH
+$ cast call 0x0000000000000000000000000000000000000043 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef --rpc-url https://testnet.rpc.hemi.network/rpc --gas-limit 30000
+ERROR: code -32000 tx not found: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+
+(the Hemi testnet block at the time: 7260097)

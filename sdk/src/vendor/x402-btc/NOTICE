@@ -1,0 +1,6 @@
+hemi-x402-facilitator
+Copyright 2026 Dimitry B and Neva Technologies Inc
+
+The files in this directory come from hemi-x402-facilitator (https://github.com/dimitryB/x402facilitator),
+`btc/src/` at commit 4a26ad72, and are licensed under the Apache License, Version 2.0 (LICENSE in this
+directory). hemi-bitcoin-facts modified `wallet.ts` and `derive.ts`; VENDOR.md lists every change.

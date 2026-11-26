@@ -1,0 +1,27 @@
+# secrets: never commit, never read
+.env
+.env.*
+.secrets/
+*.key
+*.pem
+
+# build
+node_modules/
+dist/
+out/
+cache/
+broadcast/
+coverage/
+*.tsbuildinfo
+
+# local
+.DS_Store
+.regtest/
+
+# the spike's outputs are the evidence for docs/DECISIONS.md D-001 to D-012
+!docs/research/spike/out/
+!docs/research/spike/out/**
+docs/research/spike/**/__pycache__/
+
+# Claude Code worktrees
+.claude/worktrees/

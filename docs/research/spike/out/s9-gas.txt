@@ -1,0 +1,49 @@
+# S9 gas run; 0x44 height 976833
+probe = staticcall{gas: cap} measured by gasleft() before/after; 'used' includes the CALL's own access cost (warm 100 for hVM precompiles, see below) and copying the answer into memory.
+overhead calibration: probe(0x43, 31-byte input, cap 30000) = used 5317 -> overhead 317 gas over the 5000 charge
+for comparison: identity precompile 0x04 (charge 15), empty input: used 2826; a code-less address: used 2811 (2600 cold access) -> upstream precompiles are COLD, hVM precompiles are warm
+
+| precompile | input bytes | brief gas | cap | ok | returned bytes | used (cold frame) | used - overhead | second call in same frame |
+|---|---|---|---|---|---|---|---|---|
+| 0x40 | 42 | 50000 | 100000 | True | 8 | 50392 | 50075 | 50392 |
+| 0x41 | 46 | 100000 | 200000 | True | 43 | 100395 | 100078 | 100398 |
+| 0x42 | 36 | 25000 | 50000 | True | 68 | 25401 | 25084 | 25404 |
+| 0x43 | 32 | 5000 | 10000 | True | 4 | 5386 | 5069 | 5389 |
+| 0x44 | 0 | 5000 | 10000 | True | 116 | 5401 | 5084 | 5404 |
+| 0x45 | 4 | 6000 | 12000 | True | 0 | 6317 | 6000 | 6314 |
+| 0x46 | 42 | 25000 | 50000 | True | 22 | 25392 | 25075 | 25392 |
+| 0x47 | 36 | 15000 | 30000 | True | 50 | 15395 | 15078 | 15398 |
+| 0x48 | 36 | 15000 | 30000 | True | 33 | 15395 | 15078 | 15398 |
+| 0x49 | 38 | 15000 | 30000 | True | 0 | 15323 | 15006 | 15317 |
+
+exact-cap check (cap = brief gas, then brief gas - 1):
+  0x40: cap 50000 -> ok True used 50392 len 8; cap 49999 -> ok False used 50322 len 0
+  0x41: cap 100000 -> ok True used 100395 len 43; cap 99999 -> ok False used 100322 len 0
+  0x42: cap 25000 -> ok True used 25401 len 68; cap 24999 -> ok False used 25322 len 0
+  0x43: cap 5000 -> ok True used 5386 len 4; cap 4999 -> ok False used 5316 len 0
+  0x44: cap 5000 -> ok True used 5401 len 116; cap 4999 -> ok False used 5310 len 0
+  0x45: cap 6000 -> ok True used 6317 len 0; cap 5999 -> ok False used 6316 len 0
+  0x46: cap 25000 -> ok True used 25392 len 22; cap 24999 -> ok False used 25322 len 0
+  0x47: cap 15000 -> ok True used 15395 len 50; cap 14999 -> ok False used 15322 len 0
+  0x48: cap 15000 -> ok True used 15395 len 33; cap 14999 -> ok False used 15322 len 0
+  0x49: cap 15000 -> ok True used 15323 len 0; cap 14999 -> ok False used 15322 len 0
+
+# Fee of one record transaction
+latest block 5780436: baseFeePerGas 258 wei; eth_gasPrice 1000258 wei; eth_maxPriorityFeePerGas 1000000 wei
+$ cast call 0x420000000000000000000000000000000000000F 'getL1Fee(bytes)(uint256)' 0x4ff39bca99af0ac5…(200 bytes) --rpc-url https://rpc.hemi.network/rpc
+0x00000000000000000000000000000000000000000000000000000070c0eb3ff8
+$ cast call 0x420000000000000000000000000000000000000F 'getL1FeeUpperBound(uint256)(uint256)' 200 --rpc-url https://rpc.hemi.network/rpc
+0x00000000000000000000000000000000000000000000000000000075c9027758
+GasPriceOracle.l1BaseFee() = 161465748
+GasPriceOracle.blobBaseFee() = 8053348
+GasPriceOracle.baseFeeScalar() = 1000000
+GasPriceOracle.blobBaseFeeScalar() = 0
+GasPriceOracle.decimals() = 6
+$ cast call 0x420000000000000000000000000000000000000F 'getOperatorFee(uint256)(uint256)' 120000 --rpc-url https://rpc.hemi.network/rpc
+0x0000000000000000000000000000000000000000000000000000000000000000  (Isthmus operator fee; 0 = none)
+L1Block 0x4200…0015 operatorFeeScalar() = 0x0000000000000000000000000000000000000000000000000000000000000000
+L1Block 0x4200…0015 operatorFeeConstant() = 0x0000000000000000000000000000000000000000000000000000000000000000
+L2 execution: 120000 gas x eth_gasPrice 1000258 wei = 120030960000 wei
+ETH/USD: Coinbase spot 1572.625, Kraken last trade 1567.01
+per record (getL1Fee(200 random bytes)): L1 484272979960 + L2 120030960000 = 604303939960 wei = 0.000000604304 ETH = $0.000950 at $1,572.62/ETH
+per record (getL1FeeUpperBound(200)): L1 505883555672 + L2 120030960000 = 625914515672 wei = 0.000000625915 ETH = $0.000984 at $1,572.62/ETH

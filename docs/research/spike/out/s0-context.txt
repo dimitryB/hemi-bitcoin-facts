@@ -1,0 +1,35 @@
+# run at 2026-11-21T03:41:16Z
+$ cast rpc web3_clientVersion --rpc-url https://rpc.hemi.network/rpc
+"Geth/v0.1.0-untagged-539f4e33-20260901/linux-amd64/go1.24.2"
+
+$ cast chain-id --rpc-url https://rpc.hemi.network/rpc
+43111
+
+$ cast block-number --rpc-url https://rpc.hemi.network/rpc
+5780480
+
+$ cast rpc web3_clientVersion --rpc-url https://hemi.drpc.org
+"Geth/v10.0.0/drpc"
+
+$ cast chain-id --rpc-url https://hemi.drpc.org
+43111
+
+$ cast block-number --rpc-url https://hemi.drpc.org
+5780480
+
+$ cast rpc web3_clientVersion --rpc-url https://testnet.rpc.hemi.network/rpc
+"Geth/v0.1.0-untagged-c1771608-20261005/linux-amd64/go1.24.2"
+
+$ cast chain-id --rpc-url https://testnet.rpc.hemi.network/rpc
+743111
+
+$ cast block-number --rpc-url https://testnet.rpc.hemi.network/rpc
+7260138
+
+$ cast call 0x0000000000000000000000000000000000000044 0x --rpc-url https://rpc.hemi.network/rpc
+0x000ee7c1000000000000000000019ada2495c08b2f353705b20f8d653ad2fe492b51249a2040000000000000000000000001fd5370bb8f5442a216f7ade4ce830b16e8993d5ce00ed8f21daa0653f57ce3191ed624cc6e06ff620bdb890aa0edff39d4c4f5f795486b010df917021673a032f206
+decoded: {"height": 976833, "hash": "000000000000000000019ada2495c08b2f353705b20f8d653ad2fe492b51249a", "version": "0x20400000", "prev": "00000000000000000001fd5370bb8f5442a216f7ade4ce830b16e8993d5ce00e", "merkle": "d8f21daa0653f57ce3191ed624cc6e06ff620bdb890aa0edff39d4c4f5f79548", "time": 1795231225, "bits": "0x17021673", "nonce": 2687693318}
+$ curl -s https://blockstream.info/api/block-height/976833
+000000000000000000019ada2495c08b2f353705b20f8d653ad2fe492b51249a
+$ curl -s https://blockstream.info/api/blocks/tip/height
+976835

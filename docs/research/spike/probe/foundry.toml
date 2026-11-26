@@ -1,0 +1,13 @@
+# Read-only spike probes. Placed by eth_call state override only; nothing here is ever deployed.
+[profile.default]
+src = "src"
+out = "out"
+cache_path = "cache"
+libs = []
+solc = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+cbor_metadata = false
+offline = true
